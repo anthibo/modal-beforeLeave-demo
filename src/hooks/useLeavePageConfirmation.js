@@ -1,20 +1,27 @@
+import { ShowLeaveModalContext } from '@/pages/_app';
 import SingletonRouter, { Router } from 'next/router';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
-const defaultConfirmationDialog = async (msg) => window.confirm(msg);
 
 export const useLeavePageConfirmation = (
   shouldPreventLeaving,
-  message = 'Changes you made may not be saved.',
-  confirmationDialog = defaultConfirmationDialog
 ) => {
+  const {setShowLeaveModal} = useContext(ShowLeaveModalContext)
   useEffect(() => {
     if (!SingletonRouter.router?.change) {
       return;
     }
 
     const originalChangeFunction = SingletonRouter.router.change;
+
+    console.log('originalChangeFunction')
+    console.log(originalChangeFunction)
+
+
     const originalOnBeforeUnloadFunction = window.onbeforeunload;
+
+    console.log('originalOnBeforeUnloadFunction')
+    console.log(originalOnBeforeUnloadFunction)
 
     /*
      * Modifying the window.onbeforeunload event stops the browser tab/window from
@@ -43,7 +50,8 @@ export const useLeavePageConfirmation = (
         let confirmed = false;
 
         if (hasNavigatedAwayFromPage) {
-          confirmed = await confirmationDialog(message);
+          console.log('showing modal')
+          setShowLeaveModal(true)
         }
 
         if (confirmed) {
@@ -76,8 +84,9 @@ export const useLeavePageConfirmation = (
      * When the component is unmounted, the original change function is assigned back.
      */
     return () => {
+      console.log('clean up useEffect')
       SingletonRouter.router.change = originalChangeFunction;
       window.onbeforeunload = originalOnBeforeUnloadFunction;
     };
-  }, [shouldPreventLeaving, message, confirmationDialog]);
+  }, [shouldPreventLeaving]);
 };

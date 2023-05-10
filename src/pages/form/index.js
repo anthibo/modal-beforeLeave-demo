@@ -5,8 +5,6 @@ import { useLeavePageConfirmation } from '@/hooks/useLeavePageConfirmation';
 export default function FormRoute() {
   const [changesOnPage, setChangesOnPage] = useState(false);
 
-  useLeavePageConfirmation(changesOnPage);
-
   return (
     <div className="py-16">
       <Switch.Group>
